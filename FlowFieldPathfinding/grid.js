@@ -3,8 +3,8 @@ class Grid {
         this.rows = rows;
         this.cols = cols;
         this.data = this.make2DArray();
-        this.generateCells(0);
-
+        this.directions = this.make2DArray();
+        this.generateCells(0.1);
         this.current = null;
         this.queue = [];
         this.BLOCK = 5000;
@@ -32,6 +32,20 @@ class Grid {
         return arr;
     }
 
+    calDirections() {
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                const cell = this.data[i][j];
+                // get the lowest cost neighbour of a cell
+                const lowest = cell.getLowestCost(this.data, this.rows, this.cols);
+                let dir = p5.Vector.sub(lowest.pos, cell.pos);
+                this.directions[i][j] = dir.heading();
+            }
+        }
+
+        console.table(this.directions);
+    } 
+
     generateCells(prob) { 
         // Probability to spawn a block which is no considered in BFS (prob)
         for (let i = 0; i < this.rows; i++) {
@@ -57,13 +71,15 @@ class Grid {
     // Breadth-First Search 
     BFS() {
       while (this.queue.length > 0) {
-           const neighbours = this.current.getNeighbours(this.data, this.rows, this.cols);
+           this.current.visited = true;
+           let neighbours = this.current.getNeighbours(this.data, this.rows, this.cols);
+           neighbours = this.current.areValid(neighbours); // are valid also sets the cost and visited
+           this.current.setParm(neighbours);
            this.queue = neighbours.concat(this.queue);
            this.queue.pop();
            this.current = this.queue[this.queue.length - 1];
-       }
+      }
        this.print();
-       //console.log(this.queue);
     } 
 
     show() {
@@ -71,9 +87,23 @@ class Grid {
         noStroke();
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
-                const bri = map(this.data[i][j].cost, 0, 15, 255, 0);
-                fill(bri);        
-                rect(j * w, i * w, w, w);
+                if (this.data[i][j].block) {
+                    fill(255, 0, 0);
+                    rect(j * w, i * w, w, w);
+                } else {
+                    //const bri = map(this.data[i][j].cost, 0, 15, 255, 0);
+                    //fill(bri);        
+                    stroke(0);
+                    fill(255);
+                    rect(j * w, i * w, w, w);
+                    push();
+                    translate(j * w, i * w);
+                    rotate(this.directions[i][j]);
+                    //rotate(0);
+                    //stroke(0, 255, 0);
+                    line(w / 2, w / 2, w, w / 2);
+                    pop();
+                }
             }
         }
     }
