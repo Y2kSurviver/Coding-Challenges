@@ -3,6 +3,7 @@ class Grid {
         this.rows = rows;
         this.cols = cols;
         this.data = this.make2DArray();
+        this.directions = this.make2DArray();
         this.generateCells(0);
 
         this.current = null;
@@ -57,22 +58,56 @@ class Grid {
     // Breadth-First Search 
     BFS() {
       while (this.queue.length > 0) {
-           const neighbours = this.current.getNeighbours(this.data, this.rows, this.cols);
+           let neighbours = this.current.getNeighbours(this.data, this.rows, this.cols);
+           neighbours = this.current.areValid(neighbours);
            this.queue = neighbours.concat(this.queue);
            this.queue.pop();
            this.current = this.queue[this.queue.length - 1];
        }
        this.print();
        //console.log(this.queue);
-    } 
+    }
+
+    calDir() {
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                const cell = this.data[i][j];
+                const neighbours = cell.getNeighbours(this.data, this.rows, this.cols);
+                // get the lowest cost neighbour 
+                const lowest = this.getLowestCost(neighbours);
+                // Calculate the direction to that lowest cost cell
+                let dir = p5.Vector.sub(lowest.pos, cell.pos);
+                dir = p5.Vector.normalize(dir);
+                this.directions.push(dir); 
+            }
+        }
+    }
+    
+    getLowestCost(neighbours) {
+        let cost = Infinity;
+        let record = neighbours[0];
+        // console.log("lowest cost")
+        for (let neighbour of neighbours) {
+           if (neighbour.cost < cost) {
+               cost = neighbour.cost;
+               record = neighbour;
+           }
+        }
+
+        return record;
+    }
 
     show() {
-       //console.log("Show");
+        //console.log("Show");
+        const red = color(255, 0, 0);
+        const white = color(255, 255, 255);
+        //console.log(red);
         noStroke();
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
-                const bri = map(this.data[i][j].cost, 0, 15, 255, 0);
-                fill(bri);        
+                const amt = map(this.data[i][j].cost, 0, 11, 0, 1);
+                const heatMap = lerpColor(red, white, amt);
+                fill(heatMap);
                 rect(j * w, i * w, w, w);
             }
         }
