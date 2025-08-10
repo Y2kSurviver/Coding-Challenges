@@ -5,7 +5,6 @@ class Cell {
         this.j = j;
         this.block = false; 
         this.cost = -1;
-        this.pos = createVector(this.j * w, this.i * w);
     }
 
     getNeighbours(gridData, rows, cols) {
@@ -16,6 +15,11 @@ class Cell {
                     let cell;
                     if (this.isValidPos(this.i + l, this.j + e, rows, cols)) {
                         cell = gridData[this.i + l][this.j + e];
+                    }
+
+                    if (this.isValid(cell)) {
+                        cell.visited = true; 
+                        cell.cost = this.cost + 1;
                         nei.push(cell);
                     }
                 }
@@ -28,13 +32,7 @@ class Cell {
         return i >= 0 && i <= rows - 1 && j >= 0 && j <= cols - 1;
     }
 
-    areValid(neighbours) {
-        const filtered = [];
-        for (let neighbour of neighbours) {
-            if (!neighbour.visited && !neighbour.block) {
-               filtered.push(neighbour);
-            }
-        }
-        return filtered;
+    isValid(cell) {
+        return cell && !cell.visited && !cell.block;
     }
 }
