@@ -1,10 +1,7 @@
 let grid;
-// TODO: make a grid and cell class 
-// TODO: implement BFS 
-// TODO: construct a flow field from the heat map
 let w;
-const ROWS = 5;
-const COLS = 5;
+const ROWS = 10;
+const COLS = 10;
 
 function setup() {
     createCanvas(400, 400);
@@ -13,16 +10,12 @@ function setup() {
     grid = new Grid(ROWS, COLS);
     grid.print();
     grid.setTarget(3, 4);
-    grid.queue = [grid.current];
     grid.BFS();
     grid.calDirections();
-    //grid.queue = [grid.current];
-    //grid.print();
-    //grid.BFS();
 }
 
 function draw() {
-    background(0);
+    background(255);
     /* if (mouseIsPressed) {
         const x = floor(mouseX / w);
         const y = floor(mouseY / w);

@@ -12,18 +12,10 @@ class Cell {
         const nei = [];
         for (let l = -1; l < 2; l++) {
             for (let e = -1; e < 2; e++) {
-                if (l == 0 || e == 0) {
-                    let cell;
-                    if (this.isValidPos(this.i + l, this.j + e, rows, cols)) {
-                        cell = gridData[this.i + l][this.j + e];
-                        nei.push(cell);
-                    }
-                    
-                    /*if (this.isValid(cell)) {
-                        cell.visited = true; 
-                        cell.cost = this.cost + 1;
-                        nei.push(cell);
-                    }*/
+                let cell;
+                if (this.isValidPos(this.i + l, this.j + e, rows, cols)) {
+                    cell = gridData[this.i + l][this.j + e];
+                    nei.push(cell);
                 }
             }
         }

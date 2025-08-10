@@ -4,8 +4,9 @@ class Grid {
         this.cols = cols;
         this.data = this.make2DArray();
         this.directions = this.make2DArray();
-        this.generateCells(0.1);
+        this.generateCells(0);
         this.current = null;
+        this.target = null;
         this.queue = [];
         this.BLOCK = 5000;
     }
@@ -61,17 +62,16 @@ class Grid {
     }
 
     setTarget(i, j) {
-        //console.log("Set target");
-        //console.log(this.data[i][j]);
         this.data[i][j].visited = true;
         this.data[i][j].cost = 0;
         this.current = this.data[i][j];
+        this.target = this.current;
+        this.queue.push(this.target);
     }
 
     // Breadth-First Search 
     BFS() {
       while (this.queue.length > 0) {
-           this.current.visited = true;
            let neighbours = this.current.getNeighbours(this.data, this.rows, this.cols);
            neighbours = this.current.areValid(neighbours); // are valid also sets the cost and visited
            this.current.setParm(neighbours);
@@ -83,7 +83,6 @@ class Grid {
     } 
 
     show() {
-       //console.log("Show");
         noStroke();
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
@@ -93,19 +92,23 @@ class Grid {
                 } else {
                     //const bri = map(this.data[i][j].cost, 0, 15, 255, 0);
                     //fill(bri);        
+                    rectMode(CORNER);
                     stroke(0);
-                    fill(255);
+                    noFill();
                     rect(j * w, i * w, w, w);
                     push();
-                    translate(j * w, i * w);
+                    fill(0);
+                    rectMode(CENTER);
+                    translate(j * w + w / 2, i * w + w / 2);
                     rotate(this.directions[i][j]);
-                    //rotate(0);
-                    //stroke(0, 255, 0);
-                    line(w / 2, w / 2, w, w / 2);
+                    rect(10, 0, 5, 5);
+                    line(0, 0, 10, 0);
                     pop();
                 }
             }
         }
+        fill(0, 255, 0);
+        rect(this.target.j * w, this.target.i * w, w, w);
     }
 }
 
